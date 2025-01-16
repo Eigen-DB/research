@@ -47,15 +47,15 @@ func generateCentroids(k int, m int, D_ int) [][][]float32 {
 	return centroids
 }
 
-func compressVector(subVectors [][]float32, centroids [][][]float32) []int {
-	compressed := make([]int, len(subVectors))
+func compressVector(subVectors [][]float32, centroids [][][]float32) []float32 {
+	compressed := make([]float32, len(subVectors))
 	for i := range len(subVectors) {
 		minDist := math.MaxFloat64
 		for j := range len(centroids[i]) {
 			dist := computeL2Distance(subVectors[i], centroids[i][j])
 			if dist < minDist {
 				minDist = dist
-				compressed[i] = j
+				compressed[i] = float32(j)
 			}
 		}
 	}
@@ -70,19 +70,17 @@ func DecompressVector(compressed []int, centroids [][][]float32) []float32 {
 	return decompressed
 }
 
-func CompressManyVectors(num_vectors int, dim int, vectors [][]float32) [][]int {
-	m := 4
+func CompressManyVectors(num_vectors int, dim int, vectors [][]float32, m int, k int) [][]float32 {
 	subVectors := make([][][]float32, num_vectors)
 	for i := range num_vectors {
 		subVectors[i] = generateSubVectors(m, vectors[i])
 		//fmt.Println(subVectors[i])
 	}
 
-	k := int(math.Pow(2, 10))
 	centroids := generateCentroids(k, m, dim/m)
 	//fmt.Println(centroids)
 
-	compressedVectors := make([][]int, num_vectors)
+	compressedVectors := make([][]float32, num_vectors)
 	for i := range num_vectors {
 		compressedVectors[i] = compressVector(subVectors[i], centroids)
 		//fmt.Println(compressedVectors[i])
