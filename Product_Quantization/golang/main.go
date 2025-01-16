@@ -1,3 +1,5 @@
+// Written by Ryan Awad
+
 package main
 
 import (
