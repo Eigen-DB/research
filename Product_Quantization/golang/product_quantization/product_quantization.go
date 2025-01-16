@@ -1,12 +1,11 @@
-package main
+package product_quantization
 
 import (
-	"fmt"
 	"math"
 	"math/rand/v2"
 )
 
-func generateRandomVector(dim int) []float32 {
+func GenerateRandomVector(dim int) []float32 {
 	vec := make([]float32, dim)
 	for i := 0; i < dim; i++ {
 		vec[i] = rand.Float32()*200 - 100
@@ -42,7 +41,7 @@ func generateCentroids(k int, m int, D_ int) [][][]float32 {
 		centroids[i] = make([][]float32, k_)
 		for j := range k_ {
 			centroids[i][j] = make([]float32, D_)
-			centroids[i][j] = generateRandomVector(D_)
+			centroids[i][j] = GenerateRandomVector(D_)
 		}
 	}
 	return centroids
@@ -63,7 +62,7 @@ func compressVector(subVectors [][]float32, centroids [][][]float32) []int {
 	return compressed
 }
 
-func decompressVector(compressed []int, centroids [][][]float32) []float32 {
+func DecompressVector(compressed []int, centroids [][][]float32) []float32 {
 	decompressed := make([]float32, 0)
 	for i := range len(compressed) {
 		decompressed = append(decompressed, centroids[i][compressed[i]]...)
@@ -71,15 +70,7 @@ func decompressVector(compressed []int, centroids [][][]float32) []float32 {
 	return decompressed
 }
 
-func main() {
-	num_vectors := 5
-	dim := 12
-	vectors := make([][]float32, num_vectors)
-	for i := range num_vectors {
-		vectors[i] = generateRandomVector(dim)
-		fmt.Println(vectors[i])
-	}
-
+func CompressManyVectors(num_vectors int, dim int, vectors [][]float32) [][]int {
 	m := 4
 	subVectors := make([][][]float32, num_vectors)
 	for i := range num_vectors {
@@ -94,11 +85,8 @@ func main() {
 	compressedVectors := make([][]int, num_vectors)
 	for i := range num_vectors {
 		compressedVectors[i] = compressVector(subVectors[i], centroids)
-		fmt.Println(compressedVectors[i])
+		//fmt.Println(compressedVectors[i])
 	}
 
-	for i := range num_vectors {
-		decompressed := decompressVector(compressedVectors[i], centroids)
-		fmt.Println(decompressed)
-	}
+	return compressedVectors
 }
